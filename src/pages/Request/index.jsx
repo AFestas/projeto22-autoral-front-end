@@ -1,298 +1,252 @@
 import Header from "../../components/Header"
+import Footer from "../../components/Footer"
 import styled from "styled-components"
 import banner from "../../assets/images/banner.jpg"
 import { useEffect, useState } from "react"
-import axios from "axios"
 import Cookies from 'js-cookie';
+import getTypeService from "../../services/typeService-api"
+import getTheme from "../../services/theme-api"
+import postRequest from "../../services/request-api"
 
 export default function Requests() {
-    const [selectServiceId, setSelectServiceId] = useState();
-    const [selectTheme, setSelectTheme] = useState();
+    const [selectService, setSelectService] = useState({});
+    const [selectThemeImg, setSelectThemeImg] = useState("https://www.pitigruas.com.br/assets/uploads/media-uploader/large-imagem-trabalhos-padrao1615587465.jpg");
+    const [selectTheme, setSelectTheme] = useState([{}]);
     const [description, setDescription] = useState('');
+    const [typeService, setTypeService] = useState([{}])
+    const [theme, setTheme] = useState([{}])
 
     const userIdCookie = Cookies.get('id');
     const userId = parseInt(userIdCookie, 10);
 
-    const [typeService, setTypeService] = useState([{
-        id: 11,
-        title: "teste2"
-    }])
-
-    const [theme, setTheme] = useState([{
-        id: 11,
-        title: "teste2",
-        photo: "teste2"
-    }])
-
-    const handleDescriptionChange = (event) => {
-        setDescription(event.target.value);
-      };
-
-   useEffect(() => {
-        const url = "http://localhost:4000/service/all" 
-
-        const promise = axios.get(url) 
-
-        promise.then(res => {   
-            console.log(res)          
-
-            setTypeService(res.data) 
-            console.log(res.data)           
-        }) 
-
-        promise.catch((err) => {
-            alert(err.response.data)
-            console.log(err.message)
-            console.log("erro na galeria")
-        })        
-    }, [])
-
     useEffect(() => {
-        const url = "http://localhost:4000/theme/all" 
-        const promise = axios.get(url) 
+        getTypeService()
+          .then((data) => {
+            setTypeService(data) 
+            console.log(data)      
+          })
+          .catch((err) => {
+              console.log(err);
+              alert("erro no tipo de serviço")
+          });
 
-        promise.then(res => {   
-            console.log(res)          
-
-            setTheme(res.data) 
-            console.log(res.data)           
-        }) 
-
-        promise.catch((err) => {
-            alert(err.response.data)
-            console.log(err.message)
-            console.log("erro na galeria")
-        })        
+          getTheme()
+          .then((data) => {
+            setTheme(data) 
+            console.log(data)      
+          })
+          .catch((err) => {
+              console.log(err);
+              alert("erro no tipo de serviço")
+          });
     }, [])
-
-    function postRequst(){       
-        const body = {
-            themeId: selectTheme,
-            serviceTypeId: selectServiceId,
-            description, 
-            userId,
-        }   
-
-        let texto = encodeURIComponent(
-            `Olá, gostaria de fazer o pedido:
-            - Prato: ${selectTheme}
-            - Bebida: ${selectServiceId}
-            - Sobremesa: ${description}
-            Total: R$ ${userId}
-            
-            Nome: ${userId}
-            Endereço: ${userId}`
-        )
-                 
-        const url = "http://localhost:4000/request/"
-        const promise = axios.post(url, body)
-    
-            promise.then((res) => { 
-                open("https://wa.me/5521979272015?text=" + texto)
-                //alert("clicou")
-            })
-    
-            promise.catch(err => {        
-                alert(err.response.data) 
-                console.log(err)          
-            })
-    }
 
     return (
         <>
             <Header/>          
             <Banner src={banner} alt="Banner"/>
+            <DescriptionService>
+                <h2>BEM VIDO À PAGINA DE PEDIDOS</h2>
+                <h1>Faça seu pedido</h1>
+                <p>Bem-vindo à nossa página de pedidos de festas! Aqui você pode personalizar todos os detalhes do seu evento dos sonhos. Escolha o tipo de festa, defina o tema que mais combina com você, selecione a data de início e término do aluguel da ornamentação e descreva detalhadamente como você imagina a sua festa perfeita. Com apenas um clique, nossa equipe receberá uma mensagem no WhatsApp e entrará em contato com você para transformar seu sonho em realidade. Agora ficou mais fácil e rápido realizar a festa dos seus sonhos!</p>
+            </DescriptionService>
             <ContainerBody>
                 <DescriptionService>
-                    <h2>SOLUÇÕES PREPARADAS ESPECIALMENTE PARA REALIZAR SEU EVENTO</h2>
                     <h1>Escolha seu tipo de festa</h1>
-                    <p>Transformando momentos em memórias inesquecíveis, A Festas, onde cada celebração ganha vida Transformando momentos em memórias inesquecíveis, A Festas, onde cada celebração ganha vida Transformando momentos em memórias inesquecíveis, A Festas, onde cada celebração ganha vida!</p>
+                    <p>Escolha uma das opções abaixo que se encaixa melhor com seu sonho.</p>
                 </DescriptionService>
-                <ContainerOptions>
+                <ContainerOptions>                            
                     {typeService.map((ts)=>(
-                        <CardOptionsService key={ts.id} isSelected={selectServiceId === ts.id}>
+                        <CardOptionsService key={ts.id} isSelected={selectService.id === ts.id}>
                                 <img src={ts.photo} alt="Tipo de Serviço" />
-                                <ContainerDescriptionService>
-                                    <h1>{ts.title}</h1>   
-                                    <p>{ts.description}</p>                                    
-                                    <button onClick={()=>(setSelectServiceId(ts.id))}>SELECIONAR</button>                
-                                </ContainerDescriptionService>                      
+                                {selectService.id === ts.id && (
+                                    <img className="check" src="https://imagepng.org/wp-content/uploads/2019/12/check-icone-1-scaled.png" alt="check" />
+                                )}
+                                <h1>{ts.title}</h1>   
+                                <p>{ts.description}</p>                                    
+                                <button onClick={()=>{setSelectService(ts)}}>SELECIONAR</button>
                         </CardOptionsService>
-                    ))}
+                    ))}                   
                 </ContainerOptions>
                 <LinhaVertical />
-                <DescriptionService>
-                    <h1>Escolha seu tema</h1>
-                    <p>Transformando momentos em memórias inesquecíveis, A Festas, onde cada celebração ganha vida Transformando momentos em memórias inesquecíveis, A Festas, onde cada celebração ganha vida Transformando momentos em memórias inesquecíveis, A Festas, onde cada celebração ganha vida!</p>
-                </DescriptionService>
-                <ContainerOptions>
-                    {theme.map((t)=>(
-                        <CardOptionsTheme key={t._id }>
-                            <img src={t.photo} /> 
-                            <ContainerDescriptionTheme>
-                                <h1>{t.title}</h1>
-                                <button onClick={()=>(setSelectTheme(t.id))}>SELECIONAR</button>   
-                            </ContainerDescriptionTheme>  
-                        </CardOptionsTheme>
-                    ))}
-                </ContainerOptions>
-                <LinhaVertical />
+                {selectService.title !== "Eventos" &&
+                    <>
+                        <DescriptionService>
+                            <h1>Escolha seu tema</h1>
+                            <p>Click no botao com o nome do tema que quer ver...</p>
+                        </DescriptionService>
+                        <ContainerOptionsTheme>
+                            <img src={selectThemeImg} />
+                            <ContainerOptionsThemeButton>
+                                {theme.map((t)=>(                       
+                                    <button  key={t.id} className={selectTheme.id === t.id ? 'selected' : ''} onClick={()=>{setSelectTheme(t); setSelectThemeImg(t.photo)}}>{t.title}</button>                                                  
+                                ))}
+                            </ContainerOptionsThemeButton> 
+                        </ContainerOptionsTheme>
+                        <LinhaVertical />
+                    </>
+                }
                 <DescriptionService>
                     <h1>Descrisão da sua festa</h1>
-                    <p>Transformando momentos em memórias inesquecíveis, A Festas, onde cada celebração ganha vida Transformando momentos em memórias inesquecíveis, A Festas, onde cada celebração ganha vida Transformando momentos em memórias inesquecíveis, A Festas, onde cada celebração ganha vida!</p>
+                    <p>Seu evento é único e especial, e queremos garantir que cada detalhe seja personalizado de acordo com suas preferências. Aqui, você tem total liberdade para escrever qualquer pedido para a sua festa e fornecer todos os detalhes importantes para torná-la perfeita.
+                    Podemos começar com as cores das decorações, seja para as bolas, tecidos ou a festa em geral. Nos informe as cores que você deseja destacar e criaremos uma atmosfera incrível baseada nesses tons.
+
+                    Além disso, precisamos saber a data do seu evento para podermos nos programar adequadamente. Informe-nos se é um aniversário, casamento ou qualquer outra ocasião especial. Também nos forneça o nome do aniversariante ou do casal, para que possamos personalizar ainda mais os detalhes.
+                    Se você precisar de serviços adicionais, como DJ, buffet, entre outros, não hesite em nos informar. Estamos aqui para ajudar e podemos indicar fornecedores confiáveis e experientes para tornar o seu evento ainda mais especial.
+                    Lembre-se de que estamos à sua disposição para tornar sua festa única e sob medida. Quanto mais informações você nos fornecer, melhor poderemos atender aos seus desejos e garantir que sua festa seja memorável e repleta de detalhes personalizados. Estamos ansiosos para transformar seus sonhos em realidade!</p>
                 </DescriptionService>
                 <ContainerOptionsDescriptionUser>
-                    <textarea id="description" value={description} onChange={handleDescriptionChange}></textarea>  
-                    <button onClick={()=>(postRequst())}>SOLICITE UM ORÇAMENTO</button>
+                    <textarea id="description" value={description} onChange={(e) => (setDescription(e.target.value))}></textarea>  
+                    <button onClick={()=>(postRequest(selectTheme, selectService, description, userId))}>SOLICITE UM ORÇAMENTO</button>
                 </ContainerOptionsDescriptionUser>
             </ContainerBody>    
-            <FooterContainer>
-                <FooterText>&copy; 2023 A Festas Ornamentaçoes. Todos os direitos reservados.</FooterText>
-            </FooterContainer>   
+            <Footer/>   
         </>
        
     )
 }
+const Banner = styled.img`
+    height: 50vh;
+    width: 100%;
+    object-fit: cover;
+`
 const DescriptionService = styled.div`
-  text-align: center;
-  width: 50vw;
-  margin: 30px 0 60px;
-  h2{
-    font-family: sans-serif;
-    font-size: 12px;        
-    line-height: 24px;
-    margin-left: 20px; 
-    color: #7c7c7c;
-  }
-  h1{
-    font-family: sans-serif;
-    font-size: 35px;        
-    line-height: 24px;
-    margin-left: 20px; 
-    color: #222222;
-  }
-  p{
-    font-family: sans-serif;
-    font-size: 14px;        
-    line-height: 20px;
-    margin-left: 20px; 
-    color: #535353;
-  }
-`
-const CardOptionsTheme = styled.div`
-    position: relative;
-    width: 220px;
-    height: 220px;
-    margin: 40px 10px;
-    box-sizing: border-box;
-    border: 1px solid #9b9b9b;
-    border-radius: 4px;    
-    img{
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
+    text-align: center;
+    width: 100%;
+    margin: 10px 0;
+    h2{
+        font-family: sans-serif;
+        font-size: 12px;        
+        line-height: 24px;
+        color: #7c7c7c;
     }
-`
-const ContainerDescriptionTheme = styled.div`
-  position: absolute;
-  width: 100%;
-  height: 80%;
-  box-sizing: border-box;
-  top: 60%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  //text-align: center;
-  color: #383838;
-  background: linear-gradient(to bottom, rgba(0, 0, 0, 0), rgba(0, 0, 0, 1));
-  padding: 80px 10px 0;
-  h1{
-    font-family: sans-serif;
-    font-size: 20px;        
-    //line-height: 20px; 
-    color: #ffffff;
-    //margin: 5px;
+    h1{
+        font-family: sans-serif;
+        font-size: 35px;        
+        line-height: 24px;
+        color: #222222;
     }
     p{
-    font-family: sans-serif;
-    font-size: 12px;        
-    //line-height: 20px;
-    color: #ffffff;
-    //margin: 5px;
+        font-family: sans-serif;
+        font-size: 14px;        
+        line-height: 20px;
+        color: #535353;
+        width: 800px;
+        margin: 0 auto;
     }
-  button{
-    background-color: #f3f3f3;
-    border: none;
-    border-radius: 4px;
-    padding: 10px 20px;
-    cursor: pointer;
-   // margin: 0 30px;
-
-    font-family: sans-serif;
-    font-size: 14px;        
-    //line-height: 20px;
-    //margin-left: 20px; 
-    color: #303030;
-  }
+`
+const ContainerBody = styled.div`
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background-color: #d6a233;
+    margin: 100px;    
+    padding: 30px 0;
+`
+const LinhaVertical = styled.div`
+    border-top: 5px solid #ffffff;
+    width: 90%;
+    margin: 50px 0;
+`
+const ContainerOptionsThemeButton = styled.div`
+    display: flex;
+    align-items: center;  
+    justify-content: center;
+    width: 90%;
+    flex-wrap: wrap;
+`
+const ContainerOptions = styled.div`
+    width: 95%;
+    display: flex;
+    align-items: center;    
+    justify-content: center;    
+`
+const ContainerOptionsTheme = styled.div`
+    width: 95%;
+    display: flex;
+    align-items: center;  
+    flex-direction: column;
+    justify-content: center;  
+    margin-top: 30px;
+    img{
+        height: 300px;
+        width: 50%;
+        object-fit: cover;
+        margin-bottom: 20px;
+    }
+    button{
+        background-color: #3b8aff;
+        border: none;
+        //width: 170px;
+        border-radius: 4px;
+        padding: 10px 20px;
+        cursor: pointer;
+        margin: 0px 10px;
+        font-family: sans-serif;
+        font-size: 14px;        
+        color: #ffffff;
+        margin: 3px;
+        :hover{
+            background-color: #809fce;
+            color: #000000;
+        }
+    }
+    button.selected {
+        background-color: #faea59;
+        color: black;
+    }
 `
 const CardOptionsService = styled.div`
     position: relative;
-    width: 380px;
-    height: 380px;
-    margin: 40px 10px;
+    width: 300px;
+    height: 335px;
+    margin: 15px;
     box-sizing: border-box;
-    border: 1px solid #9b9b9b;
-    border-radius: 4px;    
+    border-radius: 4px;   
+    background-color: #ffffff;
     img{
         width: 100%;
-        height: 100%;
+        height: 200px;
         object-fit: cover;
+        border-top-left-radius: 4px;
+        border-top-right-radius: 4px;
     }
-`
-const ContainerDescriptionService = styled.div`
-  position: absolute;
-  width: 100%;
-  height: 80%;
-  box-sizing: border-box;
-  top: 60%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  //text-align: center;
-  color: #383838;
-  background: linear-gradient(to bottom, rgba(0, 0, 0, 0), rgba(0, 0, 0, 1));
-  padding: 150px 10px 0;
-  h1{
-    font-family: sans-serif;
-    font-size: 20px;        
-    //line-height: 20px; 
-    color: #ffffff;
-    //margin: 5px;
+    img.check {
+        position: absolute;
+        left: 50px;
+        width: 67%;
+        box-sizing: border-box;
+        object-fit: cover;
+        padding: 20px;
+    }
+    h1{
+        font-family: sans-serif;
+        font-size: 20px;        
+        color: #000000;
+        margin: 0px 10px;
     }
     p{
-    font-family: sans-serif;
-    font-size: 12px;        
-    //line-height: 20px;
-    color: #ffffff;
-    //margin: 5px;
+        font-family: sans-serif;
+        font-size: 12px;        
+        color: #000000;
+        margin: 10px;
     }
   button{
-    background-color: #f3f3f3;
-    border: none;
-    border-radius: 4px;
-    padding: 10px 20px;
-    cursor: pointer;
-   // margin: 0 30px;
-
-    font-family: sans-serif;
-    font-size: 14px;        
-    //line-height: 20px;
-    //margin-left: 20px; 
-    color: #303030;
+        background-color: #3b8aff;
+        border: none;
+        border-radius: 4px;
+        padding: 10px 20px;
+        cursor: pointer;
+        margin: 0px 10px;
+        font-family: sans-serif;
+        font-size: 14px;        
+        color: #ffffff;
+        :hover{
+            background-color: #809fce;
+            color: #000000;
+        }
   }
-`
-const ContainerOptions = styled.div`
-    display: flex;
-    align-items: center;
-    justify-content: center; 
 `
 const ContainerOptionsDescriptionUser = styled.div`
     display: flex;
@@ -315,47 +269,21 @@ const ContainerOptionsDescriptionUser = styled.div`
         padding-left: 10px;
     }
     button{
-        background-color: #d6a233;
-        color: #dadada;
+        background-color: #3b8aff;
         border: none;
+        width: 300px;
+        height: 50px;
         border-radius: 4px;
         padding: 10px 20px;
         cursor: pointer;
-        margin: 30px;
-
+        margin: 0px 10px;
         font-family: sans-serif;
-        font-size: 16px;        
-        line-height: 20px;
-        margin-left: 20px; 
+        font-size: 14px;        
         color: #ffffff;
-  }
-`
-const ContainerBody = styled.div`   
-    margin: 30px 0;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-  
-   
-    
-`
-const Banner = styled.img`
-    height: 50vh;
-    width: 100%;
-    object-fit: cover;
-`
-const LinhaVertical = styled.div`
-  border-top: 30px solid #d6a233;
-  width: 100%;
-  margin: 50px 0;
-`
-const FooterContainer = styled.footer`
-  background-color: #333333;
-  color: #ffffff;
-  padding: 20px;
-`
-const FooterText = styled.p`
-  text-align: center;
-  font-size: 14px;
+        margin: 3px;
+        :hover{
+            background-color: #809fce;
+            color: #000000;
+        }
+    }
 `

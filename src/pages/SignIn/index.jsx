@@ -1,66 +1,52 @@
-import { useState, useContext } from "react"
+import { useState } from "react"
 import { useNavigate, Link } from "react-router-dom"
 import styled from "styled-components"
 import banner from "../../assets/images/banner.jpg"
-import axios from "axios"
-import { UserContext } from "../../contexts/UserContext"
+import logo from "../../assets/images/logo.png"
 import Cookies from 'js-cookie';
+import signInApi from "../../services/signIn-api";
 
 export default function SignIn() {
-    const { setUserData } = useContext(UserContext)
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const [textoBotao, setTextoBotao] = useState("Entrar") //mudar
-    const [desabilitado, setDesabilitado] = useState("") //mudar    
-    const inputDesbotado = "#F2F2F2"
-    const inputAtivo = "#FFFFFF"
-    const navegacao = useNavigate()
+    const [textButton, setTextButton] = useState("Entrar") //mudar
+    const [disabled, setDisabled] = useState("") //mudar    
+    const inputDisabled = "#F2F2F2"
+    const inputActivated = "#FFFFFF"
+    const navigation = useNavigate()
 
-    function logar(e) {
+    function signIn(e) {
         e.preventDefault()
-        setTextoBotao("Carregando") 
-        setDesabilitado("disabled") 
+        setTextButton("Carregando...") 
+        setDisabled("disabled") 
 
-        const body = { email, password }
-        const url = "http://localhost:4000/auth/signin"
-        const promise = axios.post(url, body)
-       
-        promise.then((res) => {
-                
-                //setUserName(res.data.name) 
-                //setUserId(res.data.userId)
-                //setAvata(res.data.avatar) 
-                //setTipo(res.data.type) 
-                console.log(res.data);
-                Cookies.set('name', res.data.user.avatar, { expires: 2 });
-                Cookies.set('id', res.data.user.id, { expires: 2 });
-                ()=>(setUserData(res.data));
-                console.log("Logado com sucesso"); 
-                navegacao('/');
+        signInApi(email, password)
+            .then((data) => {
+                Cookies.set('avatar', data.user.avatar, { expires: 2 });
+                Cookies.set('id', data.user.id, { expires: 2 });
+                Cookies.set('name', data.user.name, { expires: 2 });
+                navigation('/');
             })
-
-            promise.catch(err => { 
-                setTextoBotao("Entrar") 
-                setDesabilitado("")
-                alert("E-mail ou senha inválida") 
-                console.log(err.response.data)
-                console.log("erro no login")                
-            })
+            .catch((err) => {
+                setTextButton("Entrar");
+                setDisabled("");
+                alert("Usuário ou senha inválidos");
+                console.log(err);
+            });
     }
-
     
     return (
         <LoginContainer>
             <Banner src={banner} alt="Banner"/>
-            <Form onSubmit={logar}>
-            <TitleBody>A Festas</TitleBody>
+            <Form onSubmit={signIn}>
+            <img src={logo} alt="Logo"/>
                 <Input 
                     id="email"
                     type="email"
                     placeholder="E-mail" 
                     value={email} 
-                    disabled={desabilitado} 
-                    corFundo={desabilitado ? inputDesbotado : inputAtivo } 
+                    disabled={disabled} 
+                    corFundo={disabled ? inputDisabled : inputActivated } 
                     onChange={e => setEmail(e.target.value)} 
                     required
                 />
@@ -69,14 +55,14 @@ export default function SignIn() {
                     type="password" 
                     placeholder="Senha" 
                     value={password} 
-                    disabled={desabilitado} 
-                    corFundo={desabilitado ? inputDesbotado : inputAtivo } 
+                    disabled={disabled} 
+                    corFundo={disabled ? inputDisabled : inputActivated } 
                     onChange={e => setPassword(e.target.value)}
                     required
                 />
-                <Button disabled={desabilitado} type="submit">{textoBotao}</Button> 
+                <Button disabled={disabled} type="submit">{textButton}</Button> 
                 <LinkSignUp>
-                    <Link to={`/`}>
+                    <Link to={`/signup`}>
                         <p>Primeira vez? Cadastre-se!</p>
                     </Link>                
                 </LinkSignUp>
@@ -102,12 +88,6 @@ const LoginContainer = styled.div`
         color: #FFFFFF;
     }
 `
-const TitleBody = styled.h1`
-    font-family: sans-serif;
-    font-size: 32px;
-    line-height: 50px;
-    color: #FFFFFF;
-`
 const Form = styled.form`
     display: flex;   
     flex-direction: column;
@@ -119,6 +99,8 @@ const Form = styled.form`
     transform: translate(-50%, -50%);
     text-align: center;
     color: white;
+    background-color: #00000086;
+    padding: 20px;
 `
 const Input = styled.input`
     box-sizing: border-box;
