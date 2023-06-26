@@ -23,8 +23,11 @@ export default function SignIn() {
         signInApi(email, password)
             .then((data) => {
                 Cookies.set('avatar', data.user.avatar, { expires: 2 });
-                Cookies.set('id', data.user.id, { expires: 2 });
                 Cookies.set('name', data.user.name, { expires: 2 });
+                Cookies.set('user', JSON.stringify(data.user));
+                Cookies.set('token', data.token, { expires: 2 });
+
+
                 navigation('/');
             })
             .catch((err) => {

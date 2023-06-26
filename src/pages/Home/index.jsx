@@ -6,13 +6,15 @@ import { useNavigate } from "react-router-dom"
 import { useEffect, useState } from "react"
 import getGallery from "../../services/gallery-api"
 import getDeposition from "../../services/depositions-api"
+import Cookies from 'js-cookie';
 
 export default function Home() {
-  const navigate = useNavigate() 
+  const navigate = useNavigate();
   const [currentSlideLeft, setCurrentSlideLeft] = useState(0);
   const [currentSlideRight, setCurrentSlideRight] = useState(0); 
   const [slides, setSlides] = useState([{}]);
   const [depositions, setDepositions] = useState([{}]);
+
 
   useEffect(() => {
     getGallery()
@@ -63,23 +65,28 @@ export default function Home() {
                     <Container>
                         <p>BEM VINDO AO APARECIDA FESTAS</p>
                         <h1>Transformando momentos em memórias inesquecíveis, A Festas, onde cada celebração ganha vida!</h1>   
-                        <button onClick={()=>navigate("/request")}>SOLICITE UM ORÇAMENTO</button>                
+                        <button onClick={()=>{navigate("/request"); window.scrollTo(0, 0)}}>SOLICITE UM ORÇAMENTO</button>                
                     </Container>
                 </div>            
-            
+                {!Cookies.get('noticeCookie') && (
+                  <CookieNoticeWrapper>
+                    <p>Este site utiliza cookies para melhorar sua experiência. Ao continuar navegando, você concorda com o uso de cookies.</p>
+                    <button onClick={()=> Cookies.set('noticeCookie', false, { expires: 2 })}>Entendi</button>
+                  </CookieNoticeWrapper>
+                )}
                 <History>
                     <div>
                         <h2>SOMOS O A FESTAS</h2>
                         <h3>Venha nos conhecer e permita-nos dar vida à sua festa dos sonhos. A Festa Ornamentações - Celebrando com Estilo e Dedicação</h3>
                     </div>                        
                     <div>
-                        <p><span>A </span>esta Ornamentações é uma empresa especializada em criar eventos memoráveis e encantadores. Com sede em um país conhecido por sua diversidade cultural e amor por celebrações, somos movidos pela paixão em transformar cada ocasião em momentos únicos e inesquecíveis. O nome &quot;A Festa&quot; foi escolhido com um propósito especial. O &quot;A&quot; representa a inicial de &quot;Aparecida&quot;, em homenagem à Nossa Senhora Aparecida, padroeira do Brasil. Essa escolha reflete nossa devoção e crença na proteção divina em todos os eventos que ornamentamos. Com uma vasta experiência no mercado, acumulamos mais de 100 montagens de festas em nosso portfólio. Desde casamentos elegantes e sofisticados a aniversários cheios de alegria, estamos presentes em cada detalhe para criar uma atmosfera mágica e personalizada.</p>
+                        <p><span>A </span>Festa Ornamentações é uma empresa especializada em criar eventos memoráveis e encantadores. Com sede em um país conhecido por sua diversidade cultural e amor por celebrações, somos movidos pela paixão em transformar cada ocasião em momentos únicos e inesquecíveis. O nome &quot;A Festa&quot; foi escolhido com um propósito especial. O &quot;A&quot; representa a inicial de &quot;Aparecida&quot;, em homenagem à Nossa Senhora Aparecida, padroeira do Brasil. Essa escolha reflete nossa devoção e crença na proteção divina em todos os eventos que ornamentamos. Com uma vasta experiência no mercado, acumulamos mais de 100 montagens de festas em nosso portfólio. Desde casamentos elegantes e sofisticados a aniversários cheios de alegria, estamos presentes em cada detalhe para criar uma atmosfera mágica e personalizada.</p>
                     </div>
                 </History> 
 
                 <Targe>
                     <h1>Consulte nossos preços e serviços e faça um orçamento!</h1>
-                    <button onClick={()=>navigate("/request")}>SOLICITE UM ORÇAMENTO</button>
+                    <button onClick={()=>{navigate("/request"); window.scrollTo(0, 0)}}>SOLICITE UM ORÇAMENTO</button>
 
                 </Targe>
 
@@ -95,7 +102,7 @@ export default function Home() {
                             <ContaineDescriptionService>
                               <h1>Casamentos</h1>
                               <p>Uma festa de casamento é um momento mágico e especial, onde dois corações se unem em uma celebração de amor e compromisso. Na A Festas, compreendemos a importância desse dia único e estamos aqui para torná-lo ainda mais especial.</p>
-                              <button onClick={()=>navigate("/request")}>SOLICITE UM ORÇAMENTO</button> 
+                              <button onClick={()=>{navigate("/request"); window.scrollTo(0, 0)}}>SOLICITE UM ORÇAMENTO</button> 
                             </ContaineDescriptionService>
                            
                         </CardServiceTypes>
@@ -104,7 +111,7 @@ export default function Home() {
                             <ContaineDescriptionService>
                               <h1>Fromaturas</h1>
                               <p>A formatura é um marco significativo na vida de cada estudante, um momento de celebração e conquista após anos de dedicação acadêmica. Na A Festas, entendemos a importância desse evento e estamos aqui para tornar sua formatura verdadeiramente memorável.</p>
-                              <button onClick={()=>navigate("/request")}>SOLICITE UM ORÇAMENTO</button> 
+                              <button onClick={()=>{navigate("/request"); window.scrollTo(0, 0)}}>SOLICITE UM ORÇAMENTO</button> 
                             </ContaineDescriptionService>                           
                         </CardServiceTypes>
                         <CardServiceTypes>
@@ -112,7 +119,7 @@ export default function Home() {
                             <ContaineDescriptionService>
                               <h1>15 anos</h1>
                               <p>A festa de debutante, também conhecida como festa de 15 anos, é um momento especial na vida de toda jovem. Na A Festas, estamos aqui para tornar esse dia único e encantador, transformando sonhos em realidade.</p>
-                              <button onClick={()=>navigate("/request")}>SOLICITE UM ORÇAMENTO</button> 
+                              <button onClick={()=>{navigate("/request"); window.scrollTo(0, 0)}}>SOLICITE UM ORÇAMENTO</button> 
                             </ContaineDescriptionService>                            
                         </CardServiceTypes>
                     </ServiceTypes>
@@ -130,7 +137,7 @@ export default function Home() {
                   <TitleService>
                         <h1>Galeria A Festas</h1>
                         <p>Aqui você encontrará um verdadeiro tesouro visual de festas encantadoras e decorações deslumbrantes criadas pela A Festa Ornamentações. Explore nossa coleção de imagens e deixe-se envolver pela magia e criatividade que trazemos para cada celebração. De aniversários a casamentos, eventos corporativos a festas temáticas, cada foto conta uma história única de momentos especiais e memórias felizes. Deixe-se inspirar por nossa paixão pela arte de ornamentar festas e descubra como podemos transformar sua próxima comemoração em algo verdadeiramente extraordinário.</p>
-                        <button onClick={()=>navigate("/gallery")}>IR PARA GALERIA</button>    
+                        <button onClick={()=>{navigate("/gallery"); window.scrollTo(0, 0)}}>IR PARA GALERIA</button>    
                   </TitleService>
                   <CarouselContainer>
                     {slides.map((slide, index) => (
@@ -180,11 +187,39 @@ const Banner = styled.img`
     width: 100%;
     object-fit: cover;
 `
+const CookieNoticeWrapper = styled.div`
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background-color: #192d44;
+  padding: 10px;
+  text-align: center;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  p{
+    color: white;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 14px;
+  }
+  button{
+    background-color: #4caf50;
+    color: white;
+    border: none;
+    margin: 0 20px;
+    padding: 8px 16px;
+    border-radius: 4px;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 14px;
+    cursor: pointer;
+  }
+`
 const Container = styled.div`
   position: absolute;
   top: 50%;
   left: 50%;
-  //width: 70%;
   transform: translate(-50%, -50%);
   text-align: center;
   color: white;

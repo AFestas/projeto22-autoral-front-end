@@ -25,6 +25,9 @@ export default function Header(){
     function logout (){
         navigate("/");
         Cookies.remove('avatar');
+        Cookies.remove('user');
+        Cookies.remove('token');
+        Cookies.remove('name');
         alert("Usuario deslogado com sucesso") 
     }
 
